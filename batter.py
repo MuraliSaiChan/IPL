@@ -24,6 +24,7 @@ class Spider1Spider(scrapy.Spider):
         season = response.xpath('//div[@class="cb-col-100 cb-col cb-nav-main cb-bg-white"]/h1/text()').get()
         for item in response.xpath("//a[@class='text-hvr-underline']"):
             match = item.xpath('.//text()').get()
+            
             link = "https://www.cricbuzz.com"+item.xpath(".//@href").get().replace("cricket-scores",'live-cricket-scorecard')
             # req = scrapy.Request()
             yield response.follow(link,self.data, meta={'match':match,'season':season})
@@ -32,6 +33,7 @@ class Spider1Spider(scrapy.Spider):
     def data(self, response):
         season = response.meta['season']
         match = response.meta['match']
+        result = response.xpath("//div[@class='cb-col cb-scrcrd-status cb-col-100 cb-text-complete']/text()").get()
         #innings1
         batter = response.xpath("//div[@id='innings_1']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][1]/div[@class='cb-col cb-col-100 cb-scrd-itms']")
         team = response.xpath("//div[@id='innings_1']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][1]/div[1]/span/text()").get()
@@ -47,6 +49,7 @@ class Spider1Spider(scrapy.Spider):
                 yield {
                     'season':season,
                     'match': match,
+                    'result':result,
                     'team':team,
                     'innings':'1st innings',
                     'batter_name': name,
@@ -56,6 +59,7 @@ class Spider1Spider(scrapy.Spider):
                     'fours':fours,
                     'sixes':sixes,
                     'strike rate':srate
+                   
                     }
         #innings2
         batter = response.xpath("//div[@id='innings_2']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][1]/div[@class='cb-col cb-col-100 cb-scrd-itms']")
@@ -72,6 +76,7 @@ class Spider1Spider(scrapy.Spider):
                 yield {
                     'season':season,
                     'match': match,
+                    'result':result,
                     'team':team,
                     'innings':'2nd innings',
                     'batter_name': name,

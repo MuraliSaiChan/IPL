@@ -24,6 +24,7 @@ class BowlerSpider(scrapy.Spider):
         season = response.xpath('//div[@class="cb-col-100 cb-col cb-nav-main cb-bg-white"]/h1/text()').get()
         for item in response.xpath("//a[@class='text-hvr-underline']"):
             match = item.xpath('.//text()').get()
+            # result = item.xpath(".//div[@class='cb-col cb-scrcrd-status cb-col-100 cb-text-complete']/text()").get()
             link = "https://www.cricbuzz.com"+item.xpath(".//@href").get().replace("cricket-scores",'live-cricket-scorecard')
             # req = scrapy.Request()
             yield response.follow(link,self.data, meta={'match':match,'season':season})
@@ -32,53 +33,61 @@ class BowlerSpider(scrapy.Spider):
     def data(self, response):
         season = response.meta['season']
         match = response.meta['match']
+        result = response.xpath("//div[@class='cb-col cb-scrcrd-status cb-col-100 cb-text-complete']/text()").get()
         #innings1
         bowler = response.xpath("//div[@id='innings_1']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][2]/div[@class='cb-col cb-col-100 cb-scrd-itms ']")
-        team = response.xpath("//div[@id='innings_1']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][2]/div[1]/span/text()").get()
+        team = response.xpath("//div[@id='innings_2']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][1]/div[1]/span/text()").get()
         for i in bowler[:-2]:
             name = i.xpath(".//div[1]/a/text()").get()
-            out = i.xpath(".//div[2]/span/text()").get()
-            runs = i.xpath(".//div[3]/text()").get()
-            balls = i.xpath(".//div[4]/text()").get()
-            fours = i.xpath(".//div[5]/text()").get()
-            sixes = i.xpath(".//div[6]/text()").get()
-            srate = i.xpath(".//div[7]/text()").get()
+            overs = i.xpath(".//div[2]/text()").get()
+            maidens = i.xpath(".//div[3]/text()").get()
+            runs = i.xpath(".//div[4]/text()").get()
+            wickets = i.xpath(".//div[5]/text()").get()
+            noballs = i.xpath(".//div[6]/text()").get()
+            wides = i.xpath(".//div[7]/text()").get()
+            eco = i.xpath(".//div[8]/text()").get()
             # if name != '':
             yield {
                 'season':season,
                 'match': match,
+                'result':result,
                 'team':team,
-                'innings':'1st innings',
+                'innings':'2nd innings',
                 'bowler_name': name,
-                # 'runs':runs,
-                # 'balls':balls,
-                # 'fours':fours,
-                # 'sixes':sixes,
-                # 'strike rate':srate
+                'overs':overs,
+                'maidens':maidens,
+                'runs':runs,
+                'wickets':wickets,
+                'noballs':noballs,
+                'wides': wides,
+                'economy':eco
                 }
         #innings2
-        batter = response.xpath("//div[@id='innings_2']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][2]/div[@class='cb-col cb-col-100 cb-scrd-itms ']")
-        team = response.xpath("//div[@id='innings_2']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][2]/div[1]/span/text()").get()
+        bowler = response.xpath("//div[@id='innings_2']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][2]/div[@class='cb-col cb-col-100 cb-scrd-itms ']")
+        team = response.xpath("//div[@id='innings_1']/div[@class='cb-col cb-col-100 cb-ltst-wgt-hdr'][1]/div[1]/span/text()").get()
         for i in bowler[:-2]:
             name = i.xpath(".//div[1]/a/text()").get()
-            out = i.xpath(".//div[2]/span/text()").get()
-            runs = i.xpath(".//div[3]/text()").get()
-            balls = i.xpath(".//div[4]/text()").get()
-            fours = i.xpath(".//div[5]/text()").get()
-            sixes = i.xpath(".//div[6]/text()").get()
-            srate = i.xpath(".//div[7]/text()").get()
-            if name != '':
-                yield {
-                    'season':season,
-                    'match': match,
-                    'team':team,
-                    'innings':'2nd innings',
-                    'batter_name': name,
-                    # 'out_style': out,
-                    # 'runs':runs,
-                    # 'balls':balls,
-                    # 'fours':fours,
-                    # 'sixes':sixes,
-                    # 'strike rate':srate
-                    } 
+            overs = i.xpath(".//div[2]/text()").get()
+            maidens = i.xpath(".//div[3]/text()").get()
+            runs = i.xpath(".//div[4]/text()").get()
+            wickets = i.xpath(".//div[5]/text()").get()
+            noballs = i.xpath(".//div[6]/text()").get()
+            wides = i.xpath(".//div[7]/text()").get()
+            eco = i.xpath(".//div[8]/text()").get()
+            # if name != '':
+            yield {
+                'season':season,
+                'match': match,
+                'result':result,
+                'team':team,
+                'innings':'2nd innings',
+                'bowler_name': name,
+                'overs':overs,
+                'maidens':maidens,
+                'runs':runs,
+                'wickets':wickets,
+                'noballs':noballs,
+                'wides': wides,
+                'economy':eco
+                }
 
